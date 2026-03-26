@@ -1,0 +1,17 @@
+:root {
+  --primary: #1677ff;
+  --bg: #f5f7fb;
+  --card-bg: #ffffff;
+  --radius: 12px;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.ant-card {
+  border-radius: var(--radius) !important;
+}
