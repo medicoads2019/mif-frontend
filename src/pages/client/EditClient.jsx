@@ -639,6 +639,9 @@ export default function EditClient() {
               <Descriptions.Item label="My Referral Code">
                 {client.myReferralCode}
               </Descriptions.Item>
+              <Descriptions.Item label="Download Count">
+                {client.downloadCount ?? 0}
+              </Descriptions.Item>
               <Descriptions.Item label="Business Name">
                 {client.businessName || "—"}
               </Descriptions.Item>

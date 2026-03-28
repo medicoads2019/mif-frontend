@@ -12,6 +12,7 @@ import {
   Tooltip,
   message,
   Select,
+  DatePicker,
 } from "antd";
 
 import {
@@ -26,9 +27,12 @@ import {
   searchFestivalByName,
   softDeleteFestival,
   updateFestivalStatus,
+  updateFestivalName,
+  updateFestivalDate,
 } from "../../api/festivalApi";
 
 import { formatIndianDate } from "../../utils/dateFormatter";
+import dayjs from "dayjs";
 
 import PageHeader from "../../components/common/PageHeader";
 import EditIcon from "../../icons/EditIcon";
@@ -59,6 +63,8 @@ const Festivals = () => {
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [activeMonth, setActiveMonth] = useState(null);
+  const [editingCell, setEditingCell] = useState(null);
+  const [editingValue, setEditingValue] = useState("");
 
   /* ================= FETCH FESTIVALS ================= */
   const fetchFestivals = async () => {
@@ -127,6 +133,86 @@ const Festivals = () => {
       );
     } catch (error) {
       message.error(error?.response?.data?.message || "Status update failed");
+    }
+  };
+
+  const startInlineEdit = (record, field) => {
+    if (field === "festivalName") {
+      setEditingCell({ festivalId: record.festivalId, field });
+      setEditingValue(record.festivalName || "");
+    }
+  };
+
+  const cancelInlineEdit = () => {
+    setEditingCell(null);
+    setEditingValue("");
+  };
+
+  const saveFestivalName = async (record) => {
+    const nextName = editingValue.trim();
+    if (!nextName) {
+      message.warning("Festival name cannot be empty");
+      return;
+    }
+    if (nextName === record.festivalName) {
+      cancelInlineEdit();
+      return;
+    }
+
+    try {
+      await updateFestivalName(record.festivalId, nextName);
+      message.success("Festival name updated");
+
+      setFestivals((prev) =>
+        prev.map((f) =>
+          f.festivalId === record.festivalId
+            ? { ...f, festivalName: nextName }
+            : f,
+        ),
+      );
+      setAllFestivals((prev) =>
+        prev.map((f) =>
+          f.festivalId === record.festivalId
+            ? { ...f, festivalName: nextName }
+            : f,
+        ),
+      );
+      cancelInlineEdit();
+    } catch (error) {
+      message.error(error?.response?.data?.message || "Name update failed");
+    }
+  };
+
+  const saveFestivalDate = async (record, dateValue) => {
+    if (!dateValue) return;
+
+    const formattedDate = dayjs(dateValue).format("DD-MM-YYYY");
+    const currentDate = record.festivalDate
+      ? dayjs(record.festivalDate).format("DD-MM-YYYY")
+      : null;
+
+    if (formattedDate === currentDate) return;
+
+    try {
+      await updateFestivalDate(record.festivalId, formattedDate);
+      message.success("Festival date updated");
+
+      setFestivals((prev) =>
+        prev.map((f) =>
+          f.festivalId === record.festivalId
+            ? { ...f, festivalDate: dayjs(dateValue).toISOString() }
+            : f,
+        ),
+      );
+      setAllFestivals((prev) =>
+        prev.map((f) =>
+          f.festivalId === record.festivalId
+            ? { ...f, festivalDate: dayjs(dateValue).toISOString() }
+            : f,
+        ),
+      );
+    } catch (error) {
+      message.error(error?.response?.data?.message || "Date update failed");
     }
   };
 
@@ -200,13 +286,59 @@ const Festivals = () => {
     {
       title: "Festival Name",
       dataIndex: "festivalName",
+      render: (value, record) => {
+        const isEditing =
+          editingCell?.festivalId === record.festivalId &&
+          editingCell?.field === "festivalName";
+
+        if (isEditing) {
+          return (
+            <Input
+              autoFocus
+              size="small"
+              value={editingValue}
+              onChange={(e) => setEditingValue(e.target.value)}
+              onPressEnter={() => saveFestivalName(record)}
+              onBlur={() => saveFestivalName(record)}
+              onClick={(e) => e.stopPropagation()}
+            />
+          );
+        }
+
+        return (
+          <Tooltip title="Click to edit festival name">
+            <span
+              onClick={(e) => {
+                e.stopPropagation();
+                startInlineEdit(record, "festivalName");
+              }}
+              style={{ cursor: "pointer" }}
+            >
+              {value}
+            </span>
+          </Tooltip>
+        );
+      },
       sorter: (a, b) => a.festivalName.localeCompare(b.festivalName),
     },
     {
       title: "Festival Date",
       dataIndex: "festivalDate",
       sorter: (a, b) => new Date(a.festivalDate) - new Date(b.festivalDate),
-      render: (date) => formatIndianDate(date),
+      render: (date, record) => (
+        <Tooltip title="Click to change festival date">
+          <Space size={6} onClick={(e) => e.stopPropagation()}>
+            <span>{formatIndianDate(date)}</span>
+            <DatePicker
+              size="small"
+              value={date ? dayjs(date) : null}
+              format="DD-MM-YYYY"
+              allowClear={false}
+              onChange={(val) => saveFestivalDate(record, val)}
+            />
+          </Space>
+        </Tooltip>
+      ),
     },
     {
       title: "Status",

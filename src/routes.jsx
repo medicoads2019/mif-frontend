@@ -38,6 +38,12 @@ import CreateBanner from "./pages/banner/CreateBanner";
 import EditBanner from "./pages/banner/EditBanner";
 import TrashBanner from "./pages/banner/TrashBanner";
 
+/* Start Screen Images */
+import StartScreenImages from "./pages/startScreenImage/StartScreenImages";
+import CreateStartScreenImage from "./pages/startScreenImage/CreateStartScreenImage";
+import EditStartScreenImage from "./pages/startScreenImage/EditStartScreenImage";
+import TrashStartScreenImage from "./pages/startScreenImage/TrashStartScreenImage";
+
 /* DemoFrames */
 import DemoFrames from "./pages/demoFrame/DemoFrames";
 import CreateDemoFrame from "./pages/demoFrame/CreateDemoFrame";
@@ -139,6 +145,21 @@ export default function AppRoutes() {
         <Route path="/banners/create" element={<CreateBanner />} />
         <Route path="/banners/:id" element={<EditBanner />} />
         <Route path="/banners/trash" element={<TrashBanner />} />
+
+        {/* Start Screen Images */}
+        <Route path="/start-screen-images" element={<StartScreenImages />} />
+        <Route
+          path="/start-screen-images/create"
+          element={<CreateStartScreenImage />}
+        />
+        <Route
+          path="/start-screen-images/trash"
+          element={<TrashStartScreenImage />}
+        />
+        <Route
+          path="/start-screen-images/:id"
+          element={<EditStartScreenImage />}
+        />
 
         {/* DemoFrames */}
         <Route path="/demoFrames" element={<DemoFrames />} />

@@ -12,6 +12,7 @@ import {
   SafetyCertificateOutlined,
   PhoneOutlined,
   FileTextOutlined,
+  MobileOutlined,
 } from "@ant-design/icons";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -122,6 +123,31 @@ const menuItems = [
       },
       {
         key: "/banners/trash",
+        icon: <DeleteOutlined />,
+        label: "Trash",
+      },
+    ],
+  },
+
+  /* ⭐ DemoFrames */
+  /* ⭐ Start Screen Images */
+  {
+    key: "startScreenImage",
+    icon: <MobileOutlined />,
+    label: "Start Screen Images",
+    children: [
+      {
+        key: "/start-screen-images",
+        icon: <UnorderedListOutlined />,
+        label: "Image List",
+      },
+      {
+        key: "/start-screen-images/create",
+        icon: <PlusOutlined />,
+        label: "Add Image",
+      },
+      {
+        key: "/start-screen-images/trash",
         icon: <DeleteOutlined />,
         label: "Trash",
       },
@@ -320,6 +346,13 @@ const resolveSelectedKey = (pathname) => {
     return "/banners";
 
   if (
+    pathname.startsWith("/start-screen-images/") &&
+    pathname !== "/start-screen-images/create" &&
+    pathname !== "/start-screen-images/trash"
+  )
+    return "/start-screen-images";
+
+  if (
     pathname.startsWith("/demoFrames/") &&
     pathname !== "/demoFrames/create" &&
     pathname !== "/demoFrames/trash"
@@ -373,6 +406,7 @@ const resolveOpenKeys = (pathname) => {
   if (pathname.startsWith("/categorys")) return ["category"];
   if (pathname.startsWith("/businesss")) return ["business"];
   if (pathname.startsWith("/banners")) return ["banner"];
+  if (pathname.startsWith("/start-screen-images")) return ["startScreenImage"];
   if (pathname.startsWith("/demoFrames")) return ["demoFrame"];
   if (pathname.startsWith("/businessFrames")) return ["businessFrame"];
   if (pathname.startsWith("/clientFrames")) return ["clientFrame"];
