@@ -62,6 +62,7 @@ const Festivals = () => {
   const [allFestivals, setAllFestivals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [pageSize, setPageSize] = useState(10);
   const [activeMonth, setActiveMonth] = useState(null);
   const [editingCell, setEditingCell] = useState(null);
   const [editingValue, setEditingValue] = useState("");
@@ -282,10 +283,12 @@ const Festivals = () => {
       key: "srNo",
       render: (_, __, index) => index + 1,
       width: 80,
+      align: "center",
     },
     {
       title: "Festival Name",
       dataIndex: "festivalName",
+      align: "left",
       render: (value, record) => {
         const isEditing =
           editingCell?.festivalId === record.festivalId &&
@@ -324,6 +327,7 @@ const Festivals = () => {
     {
       title: "Festival Date",
       dataIndex: "festivalDate",
+      align: "center",
       sorter: (a, b) => new Date(a.festivalDate) - new Date(b.festivalDate),
       render: (date, record) => (
         <Tooltip title="Click to change festival date">
@@ -343,6 +347,7 @@ const Festivals = () => {
     {
       title: "Status",
       dataIndex: "festivalStatus",
+      align: "center",
       render: (status, record) => (
         <Select
           value={status}
@@ -365,6 +370,7 @@ const Festivals = () => {
     {
       title: "Images",
       width: 100,
+      align: "center",
       render: (_, record) => (
         <Button
           icon={<PictureOutlined />}
@@ -378,6 +384,7 @@ const Festivals = () => {
     {
       title: "Actions",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit Festival">
@@ -437,6 +444,20 @@ const Festivals = () => {
               Refresh
             </Button>
 
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -484,7 +505,7 @@ const Festivals = () => {
           dataSource={festivals}
           loading={loading}
           rowKey="festivalId"
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize }}
           bordered
           size="small"
           scroll={{ x: 800 }}

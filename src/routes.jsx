@@ -6,6 +6,7 @@ import { PublicOnlyRoute, RequireAuth } from "./components/auth/RouteGuards";
 
 /* Pages */
 import Dashboard from "./pages/Dashboard";
+import DashboardSummary from "./pages/DashboardSummary";
 import EmployeeLogin from "./pages/auth/EmployeeLogin";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
@@ -121,6 +122,7 @@ export default function AppRoutes() {
       >
         {/* Dashboard */}
         <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard-summary" element={<DashboardSummary />} />
 
         {/* Festivals */}
         <Route path="/festivals" element={<Festivals />} />

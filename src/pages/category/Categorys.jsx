@@ -82,6 +82,7 @@ const Categorys = () => {
   const [categorys, setCategorys] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [pageSize, setPageSize] = useState(10);
 
   /* ================= FETCH CATEGORY ================= */
   const fetchCategorys = async () => {
@@ -191,6 +192,7 @@ const Categorys = () => {
       title: "Sr. No.",
       key: "srNo",
       width: 90,
+      align: "center",
       render: (_, record, index) => (
         <Space>
           <DragHandle id={record.categoryId} />
@@ -201,11 +203,13 @@ const Categorys = () => {
     {
       title: "Category Name",
       dataIndex: "categoryName",
+      align: "left",
       sorter: (a, b) => a.categoryName.localeCompare(b.categoryName),
     },
     {
       title: "Status",
       dataIndex: "categoryStatus",
+      align: "center",
       render: (status, record) => (
         <Select
           value={status}
@@ -228,6 +232,7 @@ const Categorys = () => {
     {
       title: "Images",
       width: 100,
+      align: "center",
       render: (_, record) => (
         <Button
           icon={<PictureOutlined />}
@@ -241,6 +246,7 @@ const Categorys = () => {
     {
       title: "Actions",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit Category">
@@ -294,6 +300,20 @@ const Categorys = () => {
               Refresh
             </Button>
 
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 100 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -319,7 +339,7 @@ const Categorys = () => {
               dataSource={categorys}
               loading={loading}
               rowKey="categoryId"
-              pagination={{ pageSize: 10 }}
+              pagination={{ pageSize: pageSize }}
               bordered
               size="small"
               scroll={{ x: 800 }}

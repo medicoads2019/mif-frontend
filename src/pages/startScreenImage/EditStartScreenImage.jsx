@@ -15,6 +15,8 @@ import {
   Row,
   Col,
   Typography,
+  Tag,
+  Divider,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -167,11 +169,28 @@ export default function EditStartScreenImage() {
       {/* ================= Header ================= */}
 
       <Card>
-        <Space direction="vertical">
-          <Title level={4} style={{ marginBottom: 2 }}>
-            {item.imageName}
-          </Title>
-          <Text type="secondary">Index: {item.indexValue}</Text>
+        <Space
+          style={{ width: "100%", justifyContent: "space-between" }}
+          align="start"
+        >
+          <Space direction="vertical" size={4}>
+            <Title level={4} style={{ marginBottom: 2 }}>
+              {item.imageName}
+            </Title>
+            <Space wrap>
+              <Text type="secondary">Index: {item.indexValue}</Text>
+              <Tag color={item.status === "ACTIVE" ? "green" : "default"}>
+                {item.status}
+              </Tag>
+              <Tag color={item.showInStartScreen ? "blue" : "default"}>
+                {item.showInStartScreen
+                  ? "VISIBLE ON START"
+                  : "HIDDEN ON START"}
+              </Tag>
+            </Space>
+          </Space>
+
+          <Button onClick={() => navigate(-1)}>Back</Button>
         </Space>
       </Card>
 
@@ -182,7 +201,7 @@ export default function EditStartScreenImage() {
           layout="vertical"
           form={form}
           onFinish={onFinish}
-          style={{ maxWidth: 600 }}
+          style={{ maxWidth: 720 }}
         >
           <Form.Item
             name="imageName"
@@ -232,14 +251,14 @@ export default function EditStartScreenImage() {
             {item.imageUrl ? (
               <Image
                 src={item.imageUrl}
-                width={160}
-                style={{ borderRadius: 8, objectFit: "cover" }}
+                width={180}
+                style={{ borderRadius: 10, objectFit: "cover" }}
               />
             ) : (
               <div
                 style={{
-                  width: 160,
-                  height: 220,
+                  width: 180,
+                  height: 260,
                   background: "#f0f0f0",
                   display: "flex",
                   alignItems: "center",
@@ -254,7 +273,8 @@ export default function EditStartScreenImage() {
 
           <Col>
             <Space direction="vertical">
-              <Text type="secondary">Replace Image</Text>
+              <Text type="secondary">Replace Image (portrait recommended)</Text>
+              <Divider style={{ margin: "8px 0" }} />
               <Upload
                 beforeUpload={beforeUpload}
                 showUploadList={false}

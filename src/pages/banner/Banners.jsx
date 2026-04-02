@@ -96,6 +96,7 @@ export default function Banners() {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [pageSize, setPageSize] = useState(10);
 
   /* ================= FETCH BANNERS ================= */
 
@@ -240,6 +241,7 @@ export default function Banners() {
       title: "Sr. No.",
       key: "srNo",
       width: 90,
+      align: "center",
       render: (_, record, index) => (
         <Space>
           <DragHandle id={record.bannerId} />
@@ -252,6 +254,7 @@ export default function Banners() {
       title: "Banner",
       dataIndex: "thumbnailUrl",
       width: 140,
+      align: "center",
       render: (url) => (
         <Image
           src={url}
@@ -268,12 +271,14 @@ export default function Banners() {
     {
       title: "Banner Name",
       dataIndex: "bannerName",
+      align: "left",
       sorter: (a, b) => a.bannerName.localeCompare(b.bannerName),
     },
 
     {
       title: "Status",
       dataIndex: "bannerStatus",
+      align: "center",
       render: (status, record) => (
         <Select
           value={status}
@@ -298,6 +303,7 @@ export default function Banners() {
       title: "Carousel",
       dataIndex: "showInCarousel",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Switch
           checked={record.showInCarousel}
@@ -309,6 +315,7 @@ export default function Banners() {
     {
       title: "Actions",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit Banner">
@@ -362,6 +369,20 @@ export default function Banners() {
               Refresh
             </Button>
 
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -387,7 +408,7 @@ export default function Banners() {
               dataSource={banners}
               loading={loading}
               rowKey="bannerId"
-              pagination={{ pageSize: 10 }}
+              pagination={{ pageSize }}
               bordered
               size="small"
               scroll={{ x: 800 }}

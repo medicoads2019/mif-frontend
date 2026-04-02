@@ -7,18 +7,22 @@ import {
   Button,
   Space,
   Tag,
+  Input,
   Popconfirm,
   Tooltip,
   message,
   Switch,
   Image,
   Select,
+  Breadcrumb,
+  Typography,
 } from "antd";
 
 import {
   ReloadOutlined,
   PlusOutlined,
   HolderOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -43,11 +47,13 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 const STATUS_OPTIONS = ["ACTIVE", "INACTIVE"];
+const { Title } = Typography;
 
 /* ── Sortable row ── */
 const SortableRow = (props) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: props["data-row-key"] });
+  const { setNodeRef, transform, transition } = useSortable({
+    id: props["data-row-key"],
+  });
   const style = {
     ...props.style,
     transform: CSS.Transform.toString(transform),
@@ -76,6 +82,8 @@ export default function StartScreenImages() {
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchText, setSearchText] = useState("");
 
   const fetchImages = async () => {
     try {
@@ -168,22 +176,23 @@ export default function StartScreenImages() {
 
   const columns = [
     {
-      title: "",
-      key: "drag",
-      width: 40,
-      render: (_, record) => <DragHandle id={record.startScreenImageId} />,
-    },
-    {
-      title: "Index",
-      dataIndex: "indexValue",
-      key: "indexValue",
-      width: 70,
+      title: "Sr. No.",
+      key: "srNo",
+      width: 100,
+      align: "center",
+      render: (_, record, index) => (
+        <Space>
+          <DragHandle id={record.startScreenImageId} />
+          {index + 1}
+        </Space>
+      ),
     },
     {
       title: "Thumbnail",
       dataIndex: "thumbnailUrl",
       key: "thumbnailUrl",
       width: 100,
+      align: "center",
       render: (url) =>
         url ? (
           <Image
@@ -200,12 +209,14 @@ export default function StartScreenImages() {
       title: "Name",
       dataIndex: "imageName",
       key: "imageName",
+      align: "left",
     },
     {
       title: "Show in Start Screen",
       dataIndex: "showInStartScreen",
       key: "showInStartScreen",
       width: 160,
+      align: "center",
       render: (val, record) => (
         <Switch
           checked={val}
@@ -222,6 +233,7 @@ export default function StartScreenImages() {
       dataIndex: "status",
       key: "status",
       width: 140,
+      align: "center",
       render: (val, record) => (
         <Select
           value={val}
@@ -231,6 +243,11 @@ export default function StartScreenImages() {
             handleStatusChange(record.startScreenImageId, status)
           }
           options={STATUS_OPTIONS.map((s) => ({ label: s, value: s }))}
+          optionRender={(option) => {
+            const status = option.value;
+            const color = status === "ACTIVE" ? "green" : "default";
+            return <Tag color={color}>{status}</Tag>;
+          }}
         />
       ),
     },
@@ -238,12 +255,14 @@ export default function StartScreenImages() {
       title: "Actions",
       key: "actions",
       width: 100,
+      align: "center",
       render: (_, record) => (
-        <Space>
+        <Space size="middle">
           <Tooltip title="Edit">
             <Button
-              size="small"
+              type="text"
               icon={<EditIcon />}
+              style={{ fontSize: 18 }}
               onClick={() =>
                 navigate(`/start-screen-images/${record.startScreenImageId}`)
               }
@@ -256,7 +275,11 @@ export default function StartScreenImages() {
             cancelText="No"
           >
             <Tooltip title="Delete">
-              <Button size="small" danger icon={<DeleteIcon />} />
+              <Button
+                type="text"
+                icon={<DeleteIcon />}
+                style={{ fontSize: 18 }}
+              />
             </Tooltip>
           </Popconfirm>
         </Space>
@@ -264,13 +287,45 @@ export default function StartScreenImages() {
     },
   ];
 
+  const filteredImages = images.filter((img) =>
+    (img.imageName || "").toLowerCase().includes(searchText.toLowerCase()),
+  );
+
   return (
     <div>
+      <Breadcrumb
+        style={{ marginBottom: 16 }}
+        items={[{ title: "Dashboard" }, { title: "Start Screen Images" }]}
+      />
+
       <PageHeader
         title="Start Screen Images"
         extra={
           <Space>
-            <Button icon={<ReloadOutlined />} onClick={fetchImages} />
+            <Input
+              allowClear
+              prefix={<SearchOutlined />}
+              placeholder="Search image name"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              style={{ width: 220 }}
+            />
+            <Button icon={<ReloadOutlined />} onClick={fetchImages}>
+              Refresh
+            </Button>
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -282,12 +337,16 @@ export default function StartScreenImages() {
         }
       />
       <Card>
+        <Title level={4} style={{ marginTop: 0 }}>
+          Start Screen Image List
+        </Title>
+
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
         >
           <SortableContext
-            items={images.map((img) => img.startScreenImageId)}
+            items={filteredImages.map((img) => img.startScreenImageId)}
             strategy={verticalListSortingStrategy}
           >
             <Table
@@ -296,10 +355,10 @@ export default function StartScreenImages() {
               onRow={(record) => ({
                 "data-row-key": record.startScreenImageId,
               })}
-              dataSource={images}
+              dataSource={filteredImages}
               columns={columns}
               loading={loading}
-              pagination={{ pageSize: 20 }}
+              pagination={{ pageSize }}
             />
           </SortableContext>
         </DndContext>

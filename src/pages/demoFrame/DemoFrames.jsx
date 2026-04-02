@@ -96,6 +96,7 @@ export default function DemoFrames() {
   const [demoFrames, setDemoFrames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [pageSize, setPageSize] = useState(10);
 
   /* ================= FETCH DEMOFRAMES ================= */
 
@@ -246,6 +247,7 @@ export default function DemoFrames() {
       title: "Sr. No.",
       key: "srNo",
       width: 90,
+      align: "center",
       render: (_, record, index) => (
         <Space>
           <DragHandle id={record.demoFrameId} />
@@ -258,6 +260,7 @@ export default function DemoFrames() {
       title: "DemoFrame",
       dataIndex: "thumbnailUrl",
       width: 120,
+      align: "center",
       render: (url) => (
         <Image
           src={url}
@@ -275,12 +278,14 @@ export default function DemoFrames() {
     {
       title: "DemoFrame Name",
       dataIndex: "demoFrameName",
+      align: "left",
       sorter: (a, b) => a.demoFrameName.localeCompare(b.demoFrameName),
     },
 
     {
       title: "Status",
       dataIndex: "demoFrameStatus",
+      align: "center",
       render: (status, record) => (
         <Select
           value={status}
@@ -305,6 +310,7 @@ export default function DemoFrames() {
       title: "Carousel",
       dataIndex: "showInCarousel",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Switch
           checked={record.showInCarousel}
@@ -316,6 +322,7 @@ export default function DemoFrames() {
     {
       title: "Actions",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit DemoFrame">
@@ -369,6 +376,20 @@ export default function DemoFrames() {
               Refresh
             </Button>
 
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -394,7 +415,7 @@ export default function DemoFrames() {
               dataSource={demoFrames}
               loading={loading}
               rowKey="demoFrameId"
-              pagination={{ pageSize: 10 }}
+              pagination={{ pageSize }}
               bordered
               size="small"
               scroll={{ x: 800 }}

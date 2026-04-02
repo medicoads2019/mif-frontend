@@ -68,6 +68,7 @@ const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [pageSize, setPageSize] = useState(10);
 
   /* ================= FETCH ================= */
   const fetchEmployees = async () => {
@@ -170,11 +171,13 @@ const Employees = () => {
       key: "srNo",
       render: (_, __, index) => index + 1,
       width: 70,
+      align: "center",
     },
     {
       title: "Photo",
       key: "photo",
       width: 70,
+      align: "center",
       render: (_, record) =>
         record.profilePhotoThumbnailUrl ? (
           <Avatar src={record.profilePhotoThumbnailUrl} size={40} />
@@ -185,6 +188,7 @@ const Employees = () => {
     {
       title: "Name",
       key: "name",
+      align: "left",
       render: (_, record) =>
         [record.firstName, record.middleName, record.lastName]
           .filter(Boolean)
@@ -194,15 +198,18 @@ const Employees = () => {
     {
       title: "Mobile",
       dataIndex: "mobileNumber",
+      align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       ellipsis: true,
+      align: "center",
     },
     {
       title: "User Type",
       dataIndex: "userType",
+      align: "center",
       render: (type, record) => (
         <Select
           value={type}
@@ -225,6 +232,7 @@ const Employees = () => {
     {
       title: "Status",
       dataIndex: "userStatus",
+      align: "center",
       render: (status, record) => (
         <Select
           value={status}
@@ -247,6 +255,7 @@ const Employees = () => {
     {
       title: "Actions",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit Employee">
@@ -301,6 +310,20 @@ const Employees = () => {
               Refresh
             </Button>
 
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -317,7 +340,7 @@ const Employees = () => {
         dataSource={employees}
         rowKey="employeeId"
         loading={loading}
-        pagination={{ pageSize: 15, showSizeChanger: true }}
+        pagination={{ pageSize }}
         scroll={{ x: 900 }}
       />
     </>

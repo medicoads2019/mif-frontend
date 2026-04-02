@@ -77,11 +77,7 @@ export default function AppContent() {
 
       <Card loading={loading}>
         <Form form={form} layout="vertical" initialValues={initialValues}>
-          <Form.Item
-            label="Privacy Policy"
-            name="privacyPolicy"
-            extra="This is singleton content shown in the Flutter Contact Us menu."
-          >
+          <Form.Item label="Privacy Policy" name="privacyPolicy">
             <Input.TextArea rows={14} placeholder="Enter privacy policy text" />
           </Form.Item>
 

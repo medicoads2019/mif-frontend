@@ -53,8 +53,14 @@ import {
 
 import { getBusinessFrameByCode } from "../../api/businessFrameApi";
 import { getClientFrameByCode } from "../../api/clientFrameApi";
-import { getImageById as getBFImageById } from "../../api/businessFrameImageApi";
-import { getImageById as getCFImageById } from "../../api/clientFrameImageApi";
+import {
+  getImageById as getBFImageById,
+  getImagesByBusinessFrame,
+} from "../../api/businessFrameImageApi";
+import {
+  getImageById as getCFImageById,
+  getImagesByClientFrame,
+} from "../../api/clientFrameImageApi";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -455,7 +461,12 @@ export default function EditClient() {
       );
       const data = res?.data?.data;
       if (data) {
+        if (data.businessFrameStatus !== "APPROVED") {
+          message.warning("Only APPROVED business frames can be applied");
+          return;
+        }
         setBfFound({
+          businessFrameId: data._id,
           businessFrameName: data.businessFrameName,
           imageIds: data.imageIds || [],
         });
@@ -473,9 +484,21 @@ export default function EditClient() {
     if (!bfFound) return;
     try {
       setBfApplying(true);
+      const activeRes = await getImagesByBusinessFrame(bfFound.businessFrameId);
+      const activeImages = activeRes?.data?.activeImages || [];
+      const activeImageIds = activeImages
+        .filter((img) => img && img.softDelete !== true)
+        .map((img) => img._id)
+        .filter(Boolean);
+
+      if (!activeImageIds.length) {
+        message.warning("No active images found for this business frame");
+        return;
+      }
+
       // Merge new imageIds with existing ones — no duplicates
       const existing = client?.businessFrameIds || [];
-      const newIds = bfFound.imageIds || [];
+      const newIds = activeImageIds;
       const merged = [...new Set([...existing, ...newIds])];
       await setClientBusinessFrameIds(id, merged);
       const added = merged.length - existing.length;
@@ -505,7 +528,12 @@ export default function EditClient() {
       const res = await getClientFrameByCode(cfCodeInput.trim().toUpperCase());
       const data = res?.data?.data;
       if (data) {
+        if (data.clientFrameStatus !== "APPROVED") {
+          message.warning("Only APPROVED client frames can be applied");
+          return;
+        }
         setCfFound({
+          clientFrameId: data._id,
           clientFrameName: data.clientFrameName,
           imageIds: data.imageIds || [],
         });
@@ -523,9 +551,21 @@ export default function EditClient() {
     if (!cfFound) return;
     try {
       setCfApplying(true);
+      const activeRes = await getImagesByClientFrame(cfFound.clientFrameId);
+      const activeImages = activeRes?.data?.activeImages || [];
+      const activeImageIds = activeImages
+        .filter((img) => img && img.softDelete !== true)
+        .map((img) => img._id)
+        .filter(Boolean);
+
+      if (!activeImageIds.length) {
+        message.warning("No active images found for this client frame");
+        return;
+      }
+
       // Merge new imageIds with existing ones — no duplicates
       const existing = client?.clientFrameIds || [];
-      const newIds = cfFound.imageIds || [];
+      const newIds = activeImageIds;
       const merged = [...new Set([...existing, ...newIds])];
       await setClientClientFrameIds(id, merged);
       const added = merged.length - existing.length;

@@ -8,8 +8,10 @@ import {
   message,
   Image,
   Typography,
+  Select,
+  Breadcrumb,
+  Tag,
 } from "antd";
-import { Link } from "react-router-dom";
 
 import {
   getStartScreenImagesBySoftDelete,
@@ -17,11 +19,12 @@ import {
   hardDeleteStartScreenImage,
 } from "../../api/startScreenImageApi";
 
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export default function TrashStartScreenImage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
   const loadTrash = async () => {
     try {
@@ -64,8 +67,16 @@ export default function TrashStartScreenImage() {
 
   const columns = [
     {
+      title: "Sr. No.",
+      key: "srNo",
+      align: "center",
+      width: 80,
+      render: (_, __, index) => index + 1,
+    },
+    {
       title: "Thumbnail",
       dataIndex: "thumbnailUrl",
+      align: "center",
       render: (url) =>
         url ? (
           <Image
@@ -81,26 +92,56 @@ export default function TrashStartScreenImage() {
     {
       title: "Image Name",
       dataIndex: "imageName",
+      align: "left",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      align: "center",
+      width: 130,
+      render: (status) => (
+        <Tag color={status === "ACTIVE" ? "green" : "default"}>
+          {status || "INACTIVE"}
+        </Tag>
+      ),
+    },
+    {
+      title: "Show In Start",
+      dataIndex: "showInStartScreen",
+      align: "center",
+      width: 150,
+      render: (show) => (
+        <Tag color={show ? "blue" : "default"}>{show ? "YES" : "NO"}</Tag>
+      ),
+    },
+    {
+      title: "Created By",
+      dataIndex: "createdBy",
+      align: "center",
+      width: 140,
+      render: (createdBy) => createdBy || "-",
     },
     {
       title: "Action",
+      align: "center",
       render: (_, r) => (
         <Space>
           <Popconfirm
             title="Restore this image?"
+            description="This image will return to active list."
             onConfirm={() => handleRestore(r.startScreenImageId)}
-            okText="Restore"
-            cancelText="Cancel"
+            okText="Yes"
+            cancelText="No"
           >
             <Button type="primary">Restore</Button>
           </Popconfirm>
 
           <Popconfirm
-            title="Permanently delete this image? This cannot be undone."
+            title="Permanently delete this image?"
+            description="This action cannot be undone."
             onConfirm={() => handleHardDelete(r.startScreenImageId)}
-            okText="Delete"
-            okButtonProps={{ danger: true }}
-            cancelText="Cancel"
+            okText="Yes"
+            cancelText="No"
           >
             <Button danger>Hard Delete</Button>
           </Popconfirm>
@@ -110,21 +151,45 @@ export default function TrashStartScreenImage() {
   ];
 
   return (
-    <Space direction="vertical" size="large" style={{ width: "100%" }}>
-      <Space>
-        <Link to="/start-screen-images">
-          <Button>← Back to List</Button>
-        </Link>
-      </Space>
+    <>
+      <Breadcrumb
+        style={{ marginBottom: 16 }}
+        items={[{ title: "Start Screen Images" }, { title: "Trash" }]}
+      />
 
-      <Card title="Trash — Start Screen Images">
+      <Card>
+        <Title level={4}>Trash Start Screen Images</Title>
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 12,
+          }}
+        >
+          <Select
+            value={pageSize}
+            onChange={setPageSize}
+            style={{ minWidth: 120 }}
+            options={[
+              { label: "10 per page", value: 10 },
+              { label: "20 per page", value: 20 },
+              { label: "30 per page", value: 30 },
+              { label: "40 per page", value: 40 },
+              { label: "50 per page", value: 50 },
+              { label: "100 per page", value: 100 },
+            ]}
+          />
+        </div>
+
         <Table
           rowKey="startScreenImageId"
           columns={columns}
           dataSource={items}
           loading={loading}
+          pagination={{ pageSize }}
         />
       </Card>
-    </Space>
+    </>
   );
 }

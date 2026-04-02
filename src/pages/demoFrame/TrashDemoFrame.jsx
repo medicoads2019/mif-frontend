@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Button, Space, Card, Popconfirm, message } from "antd";
+import { Table, Button, Space, Card, Popconfirm, message, Select } from "antd";
 
 import {
   getDemoFramesBySoftDelete,
@@ -10,6 +10,7 @@ import {
 export default function TrashDemoFrame() {
   const [demoFrames, setDemoFrames] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
   const loadTrash = async () => {
     try {
@@ -58,9 +59,11 @@ export default function TrashDemoFrame() {
     {
       title: "DemoFrame Name",
       dataIndex: "demoFrameName",
+      align: "left",
     },
     {
       title: "Action",
+      align: "center",
       render: (_, r) => (
         <Space>
           <Popconfirm
@@ -88,11 +91,34 @@ export default function TrashDemoFrame() {
 
   return (
     <Card title="Trash DemoFrames">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: 12,
+        }}
+      >
+        <Select
+          value={pageSize}
+          onChange={setPageSize}
+          style={{ minWidth: 120 }}
+          options={[
+            { label: "10 per page", value: 10 },
+            { label: "20 per page", value: 20 },
+            { label: "30 per page", value: 30 },
+            { label: "40 per page", value: 40 },
+            { label: "50 per page", value: 50 },
+            { label: "100 per page", value: 100 },
+          ]}
+        />
+      </div>
+
       <Table
         rowKey="demoFrameId"
         columns={columns}
         dataSource={demoFrames}
         loading={loading}
+        pagination={{ pageSize }}
       />
     </Card>
   );

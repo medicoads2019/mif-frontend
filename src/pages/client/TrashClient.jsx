@@ -9,10 +9,9 @@ import {
   message,
   Typography,
   Breadcrumb,
-  Avatar,
+  Select,
 } from "antd";
 
-import { UserOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 
 import {
@@ -33,6 +32,7 @@ const statusColor = {
 export default function TrashClient() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
   /* =========================================
      LOAD TRASH CLIENTS
@@ -91,21 +91,12 @@ export default function TrashClient() {
       key: "srNo",
       render: (_, __, index) => index + 1,
       width: 70,
-    },
-    {
-      title: "Photo",
-      key: "photo",
-      width: 70,
-      render: (_, record) =>
-        record.profilePhotoThumbnailUrl ? (
-          <Avatar src={record.profilePhotoThumbnailUrl} size={36} />
-        ) : (
-          <Avatar icon={<UserOutlined />} size={36} />
-        ),
+      align: "center",
     },
     {
       title: "Name",
       key: "name",
+      align: "left",
       render: (_, record) =>
         [record.firstName, record.middleName, record.lastName]
           .filter(Boolean)
@@ -114,22 +105,53 @@ export default function TrashClient() {
     {
       title: "Mobile",
       dataIndex: "mobileNumber",
+      align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       ellipsis: true,
+      align: "center",
     },
     {
       title: "Status",
       dataIndex: "clientStatus",
+      align: "center",
       render: (status) => (
         <Tag color={statusColor[status] || "default"}>{status}</Tag>
       ),
     },
     {
+      title: "Frames",
+      key: "frames",
+      align: "center",
+      render: (_, record) =>
+        (record.businessFrameIds?.length || 0) +
+        (record.clientFrameIds?.length || 0),
+      sorter: (a, b) =>
+        (a.businessFrameIds?.length || 0) +
+        (a.clientFrameIds?.length || 0) -
+        ((b.businessFrameIds?.length || 0) + (b.clientFrameIds?.length || 0)),
+    },
+    {
+      title: "Download Count",
+      dataIndex: "downloadCount",
+      key: "downloadCount",
+      align: "center",
+      render: (count) => count ?? 0,
+      sorter: (a, b) => (a.downloadCount ?? 0) - (b.downloadCount ?? 0),
+    },
+    {
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      align: "center",
+      render: (value) => value || "-",
+    },
+    {
       title: "Actions",
       key: "actions",
+      align: "center",
       render: (_, record) => (
         <Space>
           <Popconfirm
@@ -177,12 +199,35 @@ export default function TrashClient() {
           Trash — Deleted Clients
         </Title>
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 12,
+          }}
+        >
+          <Select
+            value={pageSize}
+            onChange={setPageSize}
+            style={{ minWidth: 120 }}
+            options={[
+              { label: "10 per page", value: 10 },
+              { label: "20 per page", value: 20 },
+              { label: "30 per page", value: 30 },
+              { label: "40 per page", value: 40 },
+              { label: "50 per page", value: 50 },
+              { label: "100 per page", value: 100 },
+            ]}
+          />
+        </div>
+
         <Table
           columns={columns}
           dataSource={clients}
           rowKey="clientId"
           loading={loading}
-          pagination={{ pageSize: 15, showSizeChanger: true }}
+          pagination={{ pageSize }}
+          size="small"
           scroll={{ x: 800 }}
           locale={{ emptyText: "No deleted clients found" }}
         />

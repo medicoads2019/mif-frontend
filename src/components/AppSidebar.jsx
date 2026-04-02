@@ -1,6 +1,7 @@
 import { Layout, Menu } from "antd";
 import {
   DashboardOutlined,
+  BarChartOutlined,
   CalendarOutlined,
   PlusOutlined,
   PictureOutlined,
@@ -31,6 +32,11 @@ const menuItems = [
     key: "/",
     icon: <DashboardOutlined />,
     label: "Dashboard",
+  },
+  {
+    key: "/dashboard-summary",
+    icon: <BarChartOutlined />,
+    label: "Dashboard Summary",
   },
 
   /* ⭐ Festivals */

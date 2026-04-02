@@ -10,6 +10,7 @@ import {
   Table,
   Tooltip,
   message,
+  Select,
 } from "antd";
 import {
   HolderOutlined,
@@ -84,6 +85,7 @@ export default function ContactUs() {
   const [submitting, setSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
+  const [pageSize, setPageSize] = useState(10);
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -287,6 +289,19 @@ export default function ContactUs() {
             <Button icon={<ReloadOutlined />} onClick={fetchContacts}>
               Refresh
             </Button>
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -312,7 +327,7 @@ export default function ContactUs() {
               dataSource={contacts}
               rowKey="contactUsId"
               loading={loading}
-              pagination={{ pageSize: 10, showSizeChanger: true }}
+              pagination={{ pageSize }}
               scroll={{ x: 900 }}
               components={{
                 body: {

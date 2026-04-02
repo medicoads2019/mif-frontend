@@ -41,11 +41,6 @@ export default function CreateClientFrame() {
   ========================================= */
   const onFinish = async (values) => {
     try {
-      if (!coverFile) {
-        message.warning("Please upload a cover image");
-        return;
-      }
-
       setLoading(true);
 
       const payload = {
@@ -124,7 +119,7 @@ export default function CreateClientFrame() {
             </Title>
 
             <Text type="secondary">
-              Add client frame details and upload a cover image
+              Add client frame details and optionally upload a cover image
             </Text>
           </div>
 
@@ -164,14 +159,16 @@ export default function CreateClientFrame() {
             {/* ================================
                 COVER IMAGE
             ================================= */}
-            <Card size="small" title="Cover Image">
+            <Card size="small" title="Cover Image (Optional)">
               <Space direction="vertical">
                 <Upload
                   beforeUpload={beforeUpload}
                   showUploadList={false}
                   accept="image/*"
                 >
-                  <Button icon={<UploadOutlined />}>Select Cover Image</Button>
+                  <Button icon={<UploadOutlined />}>
+                    Select Cover Image (Optional)
+                  </Button>
                 </Upload>
 
                 {preview && (

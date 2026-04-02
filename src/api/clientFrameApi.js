@@ -17,7 +17,9 @@ export const createClientFrame = (data) => {
   formData.append("clientFrameName", data.clientFrameName);
   formData.append("createdBy", data.createdBy);
   formData.append("uploadedBy", data.uploadedBy);
-  formData.append("coverImage", data.coverImage);
+  if (data.coverImage) {
+    formData.append("coverImage", data.coverImage);
+  }
 
   return API.post("/create", formData, {
     headers: { "Content-Type": "multipart/form-data" },

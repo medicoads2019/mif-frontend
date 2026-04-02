@@ -40,6 +40,7 @@ const ClientFrames = () => {
   const [clientFrames, setClientFrames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [pageSize, setPageSize] = useState(10);
 
   /* ================= FETCH ================= */
   const fetchClientFrames = async () => {
@@ -137,15 +138,25 @@ const ClientFrames = () => {
       key: "srNo",
       render: (_, __, index) => index + 1,
       width: 80,
+      align: "center",
     },
     {
       title: "Client Frame Name",
       dataIndex: "clientFrameName",
+      align: "left",
       sorter: (a, b) => a.clientFrameName.localeCompare(b.clientFrameName),
+    },
+    {
+      title: "Client Frame Code",
+      dataIndex: "clientFrameCode",
+      key: "clientFrameCode",
+      align: "center",
+      render: (value) => value || "-",
     },
     {
       title: "Status",
       dataIndex: "clientFrameStatus",
+      align: "center",
       render: (status, record) => (
         <Select
           value={status}
@@ -168,6 +179,7 @@ const ClientFrames = () => {
     {
       title: "Images",
       width: 100,
+      align: "center",
       render: (_, record) => (
         <Button
           icon={<PictureOutlined />}
@@ -181,6 +193,7 @@ const ClientFrames = () => {
     {
       title: "Actions",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit Client Frame">
@@ -234,6 +247,20 @@ const ClientFrames = () => {
               Refresh
             </Button>
 
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -251,7 +278,7 @@ const ClientFrames = () => {
           dataSource={clientFrames}
           loading={loading}
           rowKey="clientFrameId"
-          pagination={{ pageSize: 10 }}
+          pagination={{ pageSize }}
           bordered
           size="small"
           scroll={{ x: 700 }}

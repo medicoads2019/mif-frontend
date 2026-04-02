@@ -10,6 +10,7 @@ import {
   Typography,
   Breadcrumb,
   Avatar,
+  Select,
 } from "antd";
 
 import { UserOutlined } from "@ant-design/icons";
@@ -33,6 +34,7 @@ const statusColor = {
 export default function TrashEmployee() {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(10);
 
   /* =========================================
      LOAD TRASH EMPLOYEES
@@ -91,11 +93,13 @@ export default function TrashEmployee() {
       key: "srNo",
       render: (_, __, index) => index + 1,
       width: 70,
+      align: "center",
     },
     {
       title: "Photo",
       key: "photo",
       width: 70,
+      align: "center",
       render: (_, record) =>
         record.profilePhotoThumbnailUrl ? (
           <Avatar src={record.profilePhotoThumbnailUrl} size={36} />
@@ -106,6 +110,7 @@ export default function TrashEmployee() {
     {
       title: "Name",
       key: "name",
+      align: "left",
       render: (_, record) =>
         [record.firstName, record.middleName, record.lastName]
           .filter(Boolean)
@@ -114,15 +119,18 @@ export default function TrashEmployee() {
     {
       title: "Mobile",
       dataIndex: "mobileNumber",
+      align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       ellipsis: true,
+      align: "center",
     },
     {
       title: "Status",
       dataIndex: "userStatus",
+      align: "center",
       render: (status) => (
         <Tag color={statusColor[status] || "default"}>{status}</Tag>
       ),
@@ -130,6 +138,7 @@ export default function TrashEmployee() {
     {
       title: "Actions",
       key: "actions",
+      align: "center",
       render: (_, record) => (
         <Space>
           <Popconfirm
@@ -177,12 +186,34 @@ export default function TrashEmployee() {
           Trash — Deleted Employees
         </Title>
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            marginBottom: 12,
+          }}
+        >
+          <Select
+            value={pageSize}
+            onChange={setPageSize}
+            style={{ minWidth: 120 }}
+            options={[
+              { label: "10 per page", value: 10 },
+              { label: "20 per page", value: 20 },
+              { label: "30 per page", value: 30 },
+              { label: "40 per page", value: 40 },
+              { label: "50 per page", value: 50 },
+              { label: "100 per page", value: 100 },
+            ]}
+          />
+        </div>
+
         <Table
           columns={columns}
           dataSource={employees}
           rowKey="employeeId"
           loading={loading}
-          pagination={{ pageSize: 15, showSizeChanger: true }}
+          pagination={{ pageSize }}
           scroll={{ x: 800 }}
           locale={{ emptyText: "No deleted employees found" }}
         />

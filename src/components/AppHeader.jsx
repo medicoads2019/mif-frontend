@@ -22,6 +22,7 @@ const { Title } = Typography;
  */
 const routeTitleMap = {
   "/": "Dashboard",
+  "/dashboard-summary": "Dashboard Summary",
 
   /* Festivals */
   "/festivals": "Festivals",

@@ -10,7 +10,6 @@ import {
   Popconfirm,
   Tooltip,
   message,
-  Avatar,
   Select,
 } from "antd";
 
@@ -18,7 +17,6 @@ import {
   ReloadOutlined,
   PlusOutlined,
   SearchOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -40,6 +38,7 @@ const Clients = () => {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [pageSize, setPageSize] = useState(10);
 
   /* ================= FETCH ================= */
   const fetchClients = async () => {
@@ -159,21 +158,12 @@ const Clients = () => {
       key: "srNo",
       render: (_, __, index) => index + 1,
       width: 70,
-    },
-    {
-      title: "Photo",
-      key: "photo",
-      width: 70,
-      render: (_, record) =>
-        record.profilePhotoThumbnailUrl ? (
-          <Avatar src={record.profilePhotoThumbnailUrl} size={40} />
-        ) : (
-          <Avatar icon={<UserOutlined />} size={40} />
-        ),
+      align: "center",
     },
     {
       title: "Name",
       key: "name",
+      align: "left",
       render: (_, record) =>
         [record.firstName, record.middleName, record.lastName]
           .filter(Boolean)
@@ -183,15 +173,18 @@ const Clients = () => {
     {
       title: "Mobile",
       dataIndex: "mobileNumber",
+      align: "center",
     },
     {
       title: "Email",
       dataIndex: "email",
       ellipsis: true,
+      align: "center",
     },
     {
       title: "User Type",
       dataIndex: "userType",
+      align: "center",
       render: (type, record) => (
         <Select
           value={type}
@@ -214,6 +207,7 @@ const Clients = () => {
     {
       title: "Status",
       dataIndex: "clientStatus",
+      align: "center",
       render: (status, record) => (
         <Select
           value={status}
@@ -234,8 +228,36 @@ const Clients = () => {
       sorter: (a, b) => a.clientStatus.localeCompare(b.clientStatus),
     },
     {
+      title: "Frames",
+      key: "frames",
+      align: "center",
+      render: (_, record) =>
+        (record.businessFrameIds?.length || 0) +
+        (record.clientFrameIds?.length || 0),
+      sorter: (a, b) =>
+        (a.businessFrameIds?.length || 0) +
+        (a.clientFrameIds?.length || 0) -
+        ((b.businessFrameIds?.length || 0) + (b.clientFrameIds?.length || 0)),
+    },
+    {
+      title: "Download Count",
+      dataIndex: "downloadCount",
+      key: "downloadCount",
+      align: "center",
+      render: (count) => count ?? 0,
+      sorter: (a, b) => (a.downloadCount ?? 0) - (b.downloadCount ?? 0),
+    },
+    {
+      title: "Created By",
+      dataIndex: "createdBy",
+      key: "createdBy",
+      align: "center",
+      render: (value) => value || "-",
+    },
+    {
       title: "Actions",
       width: 120,
+      align: "center",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Edit Client">
@@ -290,6 +312,20 @@ const Clients = () => {
               Refresh
             </Button>
 
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              style={{ minWidth: 120 }}
+              options={[
+                { label: "10 per page", value: 10 },
+                { label: "20 per page", value: 20 },
+                { label: "30 per page", value: 30 },
+                { label: "40 per page", value: 40 },
+                { label: "50 per page", value: 50 },
+                { label: "100 per page", value: 100 },
+              ]}
+            />
+
             <Button
               type="primary"
               icon={<PlusOutlined />}
@@ -306,7 +342,8 @@ const Clients = () => {
         dataSource={clients}
         rowKey="clientId"
         loading={loading}
-        pagination={{ pageSize: 15, showSizeChanger: true }}
+        pagination={{ pageSize }}
+        size="small"
         scroll={{ x: 900 }}
       />
     </>
